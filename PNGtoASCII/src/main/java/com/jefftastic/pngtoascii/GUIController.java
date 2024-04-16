@@ -1,5 +1,8 @@
 package com.jefftastic.pngtoascii;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
@@ -47,6 +50,11 @@ public class GUIController implements Initializable {
      * Image that was loaded by end user
      */
     private Image userImage;
+    /**
+     * Radius of pixels to use in the
+     * conversion process
+     */
+    private int conversionRadius = 10;
 
     /**
      * Fired when GUI is first created
@@ -55,7 +63,17 @@ public class GUIController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-
+        // Add slider listener
+        pixelRatioSlider.valueProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observableValue, Number oldVal, Number newVal) {
+                int value = newVal.intValue();
+                pixelRatioLabel.setText("%d:1".formatted(value * value));
+                conversionRadius = value;
+                if (oldVal.intValue() != newVal.intValue())
+                    asciiOutput.setText(ASCIIConverter.toASCII(userImage, conversionRadius));
+            }
+        });
     }
 
     /**
@@ -65,10 +83,15 @@ public class GUIController implements Initializable {
     protected void onLoadImagePressed() throws FileNotFoundException {
         // Get image and load it
         File selectedImage = Main.fC.showOpenDialog(Main.mainStage);
+
+        // Abort if image is null
+        if (selectedImage == null)
+            return;
         userImage = new Image(new FileInputStream(selectedImage.getAbsolutePath()));
 
         // Set image view
         imageView.setImage(userImage);
+        asciiOutput.setText(ASCIIConverter.toASCII(userImage, conversionRadius));
     }
 
     /**

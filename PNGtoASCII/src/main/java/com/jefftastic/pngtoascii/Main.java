@@ -5,8 +5,10 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 import java.io.IOException;
+import java.util.Objects;
 
 public class Main extends Application {
     public static FileChooser fC;
@@ -23,11 +25,12 @@ public class Main extends Application {
         // Load main GUI
         FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("png-ascii-gui.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
+        scene.getStylesheets().add(Objects.requireNonNull(Main.class.getResource("stylesheet/main.css")).toExternalForm());
         stage.setTitle("PNG to ASCII");
         stage.setScene(scene);
         stage.show();
 
-        // Set mainstage
+        // Set main stage
         mainStage = stage;
     }
 
