@@ -2,6 +2,7 @@ package com.jefftastic.pngtoascii;
 
 import javafx.scene.image.Image;
 import javafx.scene.image.PixelReader;
+import javafx.scene.paint.Color;
 
 /**
  * Reads image data as pixels and compares
@@ -9,7 +10,8 @@ import javafx.scene.image.PixelReader;
  */
 
 public class ASCIIConverter {
-    private static String ascii = "@&%QWNM0gB$#DR8mHXKAUbGOpV4d9h6PkqwSE2]ayjxY5Zoen[ult13If}C{iF|(7J)vTLs?z/*cr!+<>;=^,_:'-.` ";
+    private static String ascii = "$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvunxrjft/|()1{}[]?-_+~<>i!lI;:,^`'. ";
+    private static int asciiLen = ascii.length() - 1;
 
     public static String toASCII(Image image, int radius) {
         // Declare variables
@@ -21,7 +23,7 @@ public class ASCIIConverter {
         // Iterate width-wise and populate array of bytes
         for (int y = 0; y < height / radius; y++) {
             for (int x = 0; x < width / radius; x++) {
-                byte value = RGBtoGS.getSample(pr, x, y, width, height, radius);
+                int value = RGBtoGS.getSample(pr, x, y, width, height, radius);
                 result.append(gsToChar(value));
             }
             result.append("\n");
@@ -34,8 +36,9 @@ public class ASCIIConverter {
      * Converts 0-255 grayscale value into a proper
      * ASCII character.
      */
-    private static char gsToChar(byte value) {
-        return ascii.charAt((ascii.length() - 1) / Math.max(value, 1));
+    private static char gsToChar(int value) {
+        int pos = asciiLen * value / 255;
+        return ascii.charAt(Math.abs(pos));
     }
 
     /**
@@ -43,9 +46,10 @@ public class ASCIIConverter {
      * grayscale bytes.
      */
     static class RGBtoGS {
-        private static byte getSample(PixelReader pr, int x, int y, int width, int height, int radius) {
+        private static int getSample(PixelReader pr, int x, int y, int width, int height, int radius) {
             // Declare variables
             int realX = x * radius, realY = y * radius;
+            int count = 0;
             long result = 0;
 
             // Convert into (likely large) grayscale value
@@ -58,15 +62,16 @@ public class ASCIIConverter {
                     if (realX + radX > height)
                         continue;
                     // Convert current position into grayscale 0-255 value
-                    int argb = Math.abs(pr.getArgb(realX + radX, realY + radY));
-                    result += (long) ((((argb >> 16) & 0xff) * 0.21 +
-                                    ((argb >> 8) & 0xff) * 0.72 +
-                                    (argb & 0xff) * 0.07)) / 3;
+                    Color argb = pr.getColor(realX + radX, realY + radY).grayscale();
+                    result += argb.getOpacity() > 0.1 ? (long) ((argb.getRed() * 255 +
+                                    argb.getBlue() * 255 +
+                                    argb.getGreen() * 255) / 3) : 255;
+                    count++;
                 }
             }
 
             // Return average
-            return (byte) (result / (radius * radius));
+            return (int) (result / Math.max(count, 1));
         }
     }
 }
