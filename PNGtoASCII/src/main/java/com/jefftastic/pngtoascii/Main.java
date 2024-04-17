@@ -22,7 +22,6 @@ public class Main extends Application {
         // Load main GUI
         FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("png-ascii-gui.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
-        scene.getStylesheets().add(Objects.requireNonNull(Main.class.getResource("stylesheet/main.css")).toExternalForm());
         stage.setTitle("PNG to ASCII");
         stage.setScene(scene);
         stage.show();
