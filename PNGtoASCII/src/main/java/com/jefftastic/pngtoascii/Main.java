@@ -18,9 +18,6 @@ public class Main extends Application {
     public void start(Stage stage) throws IOException {
         // Prepare file picker
         fC = new FileChooser();
-        fC.setTitle("Please choose an image");
-        FileChooser.ExtensionFilter filter = new FileChooser.ExtensionFilter("PNG Files (*.png)", "*.png");
-        fC.getExtensionFilters().add(filter);
 
         // Load main GUI
         FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("png-ascii-gui.fxml"));

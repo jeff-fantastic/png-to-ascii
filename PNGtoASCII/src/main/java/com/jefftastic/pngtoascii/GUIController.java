@@ -10,9 +10,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.*;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -97,6 +95,12 @@ public class GUIController implements Initializable {
      */
     @FXML
     protected void onLoadImagePressed() throws FileNotFoundException {
+        // Prepare file chooser
+        Main.fC.setTitle("Please choose an image");
+        FileChooser.ExtensionFilter filter = new FileChooser.ExtensionFilter("PNG Files (*.png)", "*.png");
+        Main.fC.getExtensionFilters().clear();
+        Main.fC.getExtensionFilters().add(filter);
+
         // Get image and load it
         File selectedImage = Main.fC.showOpenDialog(Main.mainStage);
 
@@ -116,6 +120,36 @@ public class GUIController implements Initializable {
      */
     @FXML
     protected void onSaveASCIIPressed() {
+        // Prepare file chooser
+        Main.fC.setTitle("Please select a save location");
+        FileChooser.ExtensionFilter filter = new FileChooser.ExtensionFilter("TXT Files (*.txt)", "*.txt");
+        Main.fC.getExtensionFilters().clear();
+        Main.fC.getExtensionFilters().add(filter);
+
+        // Open save dialog
+        File savedFile = Main.fC.showSaveDialog(Main.mainStage);
+
+        // Skip if user cancelled
+        if (savedFile == null)
+            return;
+
+        // Begin writing to file
+        try {
+            FileWriter fW = new FileWriter(savedFile);
+            BufferedWriter bW = new BufferedWriter(fW);
+            String[] splitString = asciiOutput.getText().split("\n");
+
+            for (String line : splitString)
+                bW.write(line + "\n");
+            bW.close();
+        } catch (IOException e) {
+            Alert error = new Alert(
+                    Alert.AlertType.ERROR,
+                    "Something has gone horribly wrong in the export process.\n\n" + e.getMessage(),
+                    ButtonType.OK
+            );
+            error.showAndWait();
+        }
 
     }
 
