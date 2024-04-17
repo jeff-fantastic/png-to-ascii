@@ -5,10 +5,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Label;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.Slider;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
@@ -45,6 +42,8 @@ public class GUIController implements Initializable {
     private MenuItem exitButton;
     @FXML
     private MenuItem aboutButton;
+    @FXML
+    private Spinner<Integer> lineSkip;
 
     /**
      * Image that was loaded by end user
@@ -54,7 +53,13 @@ public class GUIController implements Initializable {
      * Radius of pixels to use in the
      * conversion process
      */
-    private int conversionRadius = 10;
+    private byte conversionRadius = 10;
+    /**
+     * Amount of lines to "drop" after successfully
+     * generating one line of ASCII.<br><br>
+     * A value of 0 will prevent lines from dropping.
+     */
+    private byte lineControl = 0;
 
     /**
      * Fired when GUI is first created
@@ -63,15 +68,26 @@ public class GUIController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        // Set up spinner
+        lineSkip.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 8, 0));
+        lineSkip.valueProperty().addListener(new ChangeListener<Integer>() {
+            @Override
+            public void changed(ObservableValue<? extends Integer> observableValue, Integer oldVal, Integer newVal) {
+                lineControl = newVal.byteValue();
+                if (oldVal.byteValue() != newVal.byteValue())
+                    asciiOutput.setText(ASCIIConverter.toASCII(userImage, conversionRadius, lineControl));
+            }
+        });
+
         // Add slider listener
         pixelRatioSlider.valueProperty().addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> observableValue, Number oldVal, Number newVal) {
-                int value = newVal.intValue();
+                byte value = newVal.byteValue();
                 pixelRatioLabel.setText("%d:1".formatted(value * value));
                 conversionRadius = value;
                 if (oldVal.intValue() != newVal.intValue())
-                    asciiOutput.setText(ASCIIConverter.toASCII(userImage, conversionRadius));
+                    asciiOutput.setText(ASCIIConverter.toASCII(userImage, conversionRadius, lineControl));
             }
         });
     }
@@ -91,7 +107,7 @@ public class GUIController implements Initializable {
 
         // Set image view
         imageView.setImage(userImage);
-        asciiOutput.setText(ASCIIConverter.toASCII(userImage, conversionRadius));
+        asciiOutput.setText(ASCIIConverter.toASCII(userImage, conversionRadius, lineControl));
     }
 
     /**
@@ -117,5 +133,18 @@ public class GUIController implements Initializable {
     @FXML
     protected void onAboutPressed() {
 
+    }
+
+    @FXML
+    protected void onLinesHelpPressed() {
+        // Create help alert
+        Alert help = new Alert(
+                Alert.AlertType.NONE,
+                "This option determines how many lines of ASCII generation to skip after " +
+                "a successful line generation. This can sometimes help with squashed ASCII " +
+                "art, as most common fonts are not perfectly square.",
+                ButtonType.OK
+        );
+        help.showAndWait();
     }
 }

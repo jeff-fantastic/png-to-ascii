@@ -13,20 +13,31 @@ public class ASCIIConverter {
     private static String ascii = "$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvunxrjft/|()1{}[]?-_+~<>i!lI;:,^`'. ";
     private static int asciiLen = ascii.length() - 1;
 
-    public static String toASCII(Image image, int radius) {
+    public static String toASCII(Image image, int radius, byte lineControl) {
         // Declare variables
         int width = (int) image.getWidth();
         int height = (int) image.getHeight();
+        int lineCount = 0;
         PixelReader pr = image.getPixelReader();
         StringBuilder result = new StringBuilder();
 
         // Iterate width-wise and populate array of bytes
         for (int y = 0; y < height / radius; y++) {
+            // Skip line if count goes against control
+            if (lineCount % (lineControl+1) != 0) {
+                lineCount++;
+                continue;
+            }
+
+            // Get sample and append character based on sample
             for (int x = 0; x < width / radius; x++) {
-                int value = RGBtoGS.getSample(pr, x, y, width, height, radius);
+                short value = RGBtoGS.getSample(pr, x, y, width, height, radius);
                 result.append(gsToChar(value));
             }
+
+            // New line
             result.append("\n");
+            lineCount++;
         }
 
         return result.toString();
@@ -36,8 +47,8 @@ public class ASCIIConverter {
      * Converts 0-255 grayscale value into a proper
      * ASCII character.
      */
-    private static char gsToChar(int value) {
-        int pos = asciiLen * value / 255;
+    private static char gsToChar(short value) {
+        short pos = (short) (asciiLen * value / 255);
         return ascii.charAt(Math.abs(pos));
     }
 
@@ -46,7 +57,7 @@ public class ASCIIConverter {
      * grayscale bytes.
      */
     static class RGBtoGS {
-        private static int getSample(PixelReader pr, int x, int y, int width, int height, int radius) {
+        private static short getSample(PixelReader pr, int x, int y, int width, int height, int radius) {
             // Declare variables
             int realX = x * radius, realY = y * radius;
             int count = 0;
@@ -71,7 +82,7 @@ public class ASCIIConverter {
             }
 
             // Return average
-            return (int) (result / Math.max(count, 1));
+            return (short) (result / Math.max(count, 1));
         }
     }
 }
