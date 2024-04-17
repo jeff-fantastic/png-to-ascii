@@ -4,14 +4,19 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 
 import java.io.*;
 import java.net.URL;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 /**
@@ -72,7 +77,7 @@ public class GUIController implements Initializable {
             @Override
             public void changed(ObservableValue<? extends Integer> observableValue, Integer oldVal, Integer newVal) {
                 lineControl = newVal.byteValue();
-                if (oldVal.byteValue() != newVal.byteValue())
+                if (oldVal.byteValue() != newVal.byteValue() && userImage != null)
                     asciiOutput.setText(ASCIIConverter.toASCII(userImage, conversionRadius, lineControl));
             }
         });
@@ -84,7 +89,7 @@ public class GUIController implements Initializable {
                 byte value = newVal.byteValue();
                 pixelRatioLabel.setText("%d:1".formatted(value * value));
                 conversionRadius = value;
-                if (oldVal.intValue() != newVal.intValue())
+                if (oldVal.intValue() != newVal.intValue() && userImage != null)
                     asciiOutput.setText(ASCIIConverter.toASCII(userImage, conversionRadius, lineControl));
             }
         });
@@ -158,7 +163,7 @@ public class GUIController implements Initializable {
      */
     @FXML
     protected void onExitPressed() {
-
+        Main.mainStage.close();
     }
 
     /**
@@ -166,7 +171,22 @@ public class GUIController implements Initializable {
      */
     @FXML
     protected void onAboutPressed() {
-
+        // Create new window
+        Parent root;
+        try {
+            root = FXMLLoader.load(Objects.requireNonNull(Main.class.getResource("about.fxml")));
+            Stage stage = new Stage();
+            stage.setTitle("About This Program");
+            stage.setScene(new Scene(root));
+            stage.show();
+        } catch (IOException e) {
+            Alert error = new Alert(
+                    Alert.AlertType.ERROR,
+                    "Something has gone horribly wrong.\n\n" + e.getMessage(),
+                    ButtonType.OK
+            );
+            error.showAndWait();
+        }
     }
 
     @FXML
