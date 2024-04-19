@@ -29,7 +29,7 @@ jobs:
         cache: maven
     - name: Build with Maven
       run: mvn clean javafx:jlink
-    - run: mkdir artifact && cp target/*.jar artifact
+    - run: mkdir artifact && cp target/*.zip artifact
     - uses: actions/upload-artifact@v4
       with:
         name: Package
