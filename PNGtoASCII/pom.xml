@@ -17,6 +17,11 @@
     <dependencies>
         <dependency>
             <groupId>org.openjfx</groupId>
+            <artifactId>javafx-base</artifactId>
+            <version>17.0.6</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
             <version>17.0.6</version>
         </dependency>
@@ -60,10 +65,10 @@
                         <!-- Default configuration for running with: mvn clean javafx:run -->
                         <id>default-cli</id>
                         <configuration>
-                            <mainClass>com.jefftastic.pngtoascii/com.jefftastic.pngtoascii.HelloApplication</mainClass>
+                            <mainClass>com.jefftastic.pngtoascii.Launcher</mainClass>
                             <launcher>app</launcher>
-                            <jlinkZipName>app</jlinkZipName>
-                            <jlinkImageName>app</jlinkImageName>
+                            <jlinkZipName>png-to-ascii</jlinkZipName>
+                            <jlinkImageName>png-to-ascii</jlinkImageName>
                             <noManPages>true</noManPages>
                             <stripDebug>true</stripDebug>
                             <noHeaderFiles>true</noHeaderFiles>
