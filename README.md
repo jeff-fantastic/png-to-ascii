@@ -1,5 +1,5 @@
 # png-to-ascii
-![]("./screenshots/0.png")
+![](screenshot/0.png?raw=true)
 png-to-ascii is a GUI program written in Java utilizing the JavaFX library. png-to-ascii is a simple program that lets you quickly generate ASCII renditions of any PNG image you provide, providing additional control through a pixel sampling ratio slider and line skipper. Your generated ASCII can be exported as a text document or copied directly from the text output area.
 
 # build
