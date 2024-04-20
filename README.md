@@ -11,5 +11,8 @@ $ bash ./app.sh
 # build
 png-to-ascii requires **Maven** to build. Maven is provided in many package managers, but can also be found [here](https://maven.apache.org/download.cgi). Further dependencies (such as JavaFX) will be provided to you through Maven. To build png-to-ascii, run the following command:
 ```
+# To build and run
 $ mvn clean javafx:run
+# To just build
+$ mvn clean javafx:jlink
 ```
