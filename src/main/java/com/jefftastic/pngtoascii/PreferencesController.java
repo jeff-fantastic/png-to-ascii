@@ -47,6 +47,7 @@ public class PreferencesController implements Initializable {
         String fontValue = Preferences.preference.get("font");
         String imageSizeValue = Preferences.preference.getOrDefault("imageSize", "sNone").substring(1);
         String charSetValue = Preferences.preference.get("charSet");
+        boolean grayscaleValue = Boolean.parseBoolean(Preferences.preference.get("grayscale"));
 
         // Initialize font box
         List<String> list = Font.getFontNames();
@@ -63,6 +64,9 @@ public class PreferencesController implements Initializable {
         characterSet.getItems().addAll("Generic", "Block", "Kanji");
         characterSet.setValue(charSetValue);
         characterSet.getSelectionModel().selectedIndexProperty().addListener((observableValue, number, t1) -> enableApply());
+
+        // Initialize grayscale field
+        grayscaleButton.setSelected(grayscaleValue);
     }
 
     /**
