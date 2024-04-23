@@ -101,11 +101,21 @@ public class GUIController implements Initializable {
      * user preferences.
      */
     private void updatePreferences() {
+        // Check for grayscale image
+        setPreviewImageGrayscale();
+    }
+
+    /**
+     * Sets preview image to grayscale, if necessary
+     */
+    private void setPreviewImageGrayscale() {
         if (
-            Preferences.preference.getOrDefault("grayscale", "true") == "true" &&
+            Objects.equals(Preferences.preference.getOrDefault("grayscale", "true"), "true") &&
             imageView.getImage() != null
         )
             imageView.setImage(ASCIIConverter.RGBtoGS.imageToGrayscale(imageView.getImage()));
+        else
+            imageView.setImage(userImage);
     }
 
     /**
@@ -152,6 +162,7 @@ public class GUIController implements Initializable {
 
         // Set image view
         imageView.setImage(userImage);
+        setPreviewImageGrayscale();
         asciiOutput.setText(ASCIIConverter.toASCII(userImage, conversionRadius, lineControl));
     }
 
