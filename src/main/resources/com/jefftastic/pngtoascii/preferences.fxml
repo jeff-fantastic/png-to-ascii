@@ -3,14 +3,12 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.MenuButton?>
-<?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
-
 
 <VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="298.0" prefWidth="572.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.jefftastic.pngtoascii.PreferencesController">
    <children>
@@ -26,13 +24,7 @@
       <HBox alignment="CENTER_LEFT" prefHeight="23.0" prefWidth="584.0" VBox.vgrow="ALWAYS">
          <children>
             <Label maxWidth="1.7976931348623157E308" text="Character Set" HBox.hgrow="ALWAYS" />
-            <MenuButton minWidth="100.0" mnemonicParsing="false" text="Set" HBox.hgrow="NEVER">
-               <items>
-                  <MenuItem mnemonicParsing="false" text="Generic" />
-                  <MenuItem mnemonicParsing="false" text="Block" />
-                  <MenuItem mnemonicParsing="false" text="Kanji" />
-               </items>
-            </MenuButton>
+            <ChoiceBox fx:id="characterSet" prefWidth="150.0" />
          </children>
          <padding>
             <Insets bottom="4.0" left="4.0" right="4.0" top="4.0" />
@@ -41,13 +33,7 @@
       <HBox alignment="CENTER_LEFT" prefHeight="23.0" prefWidth="584.0" VBox.vgrow="ALWAYS">
          <children>
             <Label maxWidth="1.7976931348623157E308" text="Limit Image Size To..." HBox.hgrow="ALWAYS" />
-            <MenuButton minWidth="100.0" mnemonicParsing="false" text="Limit" HBox.hgrow="NEVER">
-               <items>
-                  <MenuItem mnemonicParsing="false" text="512x512" />
-                  <MenuItem mnemonicParsing="false" text="1024x1024" />
-                  <MenuItem mnemonicParsing="false" text="No Limit" />
-               </items>
-            </MenuButton>
+            <ChoiceBox fx:id="imageSize" prefWidth="150.0" />
          </children>
          <padding>
             <Insets bottom="4.0" left="4.0" right="4.0" top="4.0" />
@@ -65,12 +51,7 @@
       <HBox alignment="CENTER_LEFT" layoutX="18.0" layoutY="55.0" prefHeight="23.0" prefWidth="584.0" VBox.vgrow="ALWAYS">
          <children>
             <Label maxWidth="1.7976931348623157E308" minWidth="-Infinity" text="Display Font" HBox.hgrow="ALWAYS" />
-            <MenuButton layoutX="1.0" minWidth="100.0" mnemonicParsing="false" text="Font" HBox.hgrow="NEVER">
-               <HBox.margin>
-                  <Insets right="8.0" />
-               </HBox.margin>
-            </MenuButton>
-            <MenuButton layoutX="465.0" layoutY="14.0" minWidth="48.0" mnemonicParsing="false" text="Size" />
+            <ChoiceBox fx:id="fontSet" prefWidth="150.0" />
          </children>
          <padding>
             <Insets bottom="4.0" left="4.0" right="4.0" top="4.0" />
@@ -79,7 +60,7 @@
       <HBox alignment="CENTER_LEFT" layoutX="18.0" layoutY="126.0" prefHeight="23.0" prefWidth="584.0" VBox.vgrow="ALWAYS">
          <children>
             <Label maxWidth="1.7976931348623157E308" minWidth="-Infinity" text="Show Imported Image as Grayscale" HBox.hgrow="ALWAYS" />
-            <CheckBox minHeight="26.0" mnemonicParsing="false" selected="true" />
+            <CheckBox minHeight="26.0" mnemonicParsing="false" onAction="#grayscaleToggled" selected="true" />
          </children>
          <padding>
             <Insets bottom="4.0" left="4.0" right="4.0" top="4.0" />
@@ -87,12 +68,12 @@
       </HBox>
       <HBox alignment="CENTER" prefHeight="67.0" prefWidth="556.0" VBox.vgrow="ALWAYS">
          <children>
-            <Button alignment="CENTER" minWidth="100.0" mnemonicParsing="false" text="Apply" textAlignment="CENTER">
+            <Button fx:id="applyButton" alignment="CENTER" disable="true" minWidth="100.0" mnemonicParsing="false" onAction="#applyPressed" text="Apply" textAlignment="CENTER">
                <HBox.margin>
                   <Insets bottom="8.0" left="8.0" right="8.0" top="8.0" />
                </HBox.margin>
             </Button>
-            <Button alignment="CENTER" layoutX="238.0" layoutY="31.0" minWidth="100.0" mnemonicParsing="false" text="Cancel" textAlignment="CENTER">
+            <Button alignment="CENTER" cancelButton="true" layoutX="238.0" layoutY="31.0" minWidth="100.0" mnemonicParsing="false" onAction="#cancelPressed" text="Cancel" textAlignment="CENTER">
                <HBox.margin>
                   <Insets bottom="8.0" left="8.0" right="8.0" top="8.0" />
                </HBox.margin>
