@@ -36,8 +36,8 @@ public class Preferences {
      */
     public static void initialize() {
         try {
+            assignDefaults();
             if (!loadPreferences()) {
-                assignDefaults();
                 savePreferences();
             }
         } catch (IOException e) {
@@ -63,6 +63,10 @@ public class Preferences {
 
         // Save to file
         prop.store(new FileWriter(PROPERTIES_PATH), "User Preferences Data");
+
+        // Inform listeners
+        for (PreferencesListener listener : listeners)
+            listener.preferencesChanged();
     }
 
     /**
@@ -112,7 +116,6 @@ public class Preferences {
      * default values.
      */
     private static void assignDefaults() {
-        preference.clear();
         preference.put("charSet", PreferenceCharSet.Generic.toString());
         preference.put("imageLimit", PreferenceImageLimit.sNone.toString());
         preference.put("font", "Courier");

@@ -43,20 +43,25 @@ public class PreferencesController implements Initializable {
         // Initialize config
         Preferences.initialize();
 
+        // Declare variables
+        String fontValue = Preferences.preference.get("font");
+        String imageSizeValue = Preferences.preference.getOrDefault("imageSize", "sNone").substring(1);
+        String charSetValue = Preferences.preference.get("charSet");
+
         // Initialize font box
         List<String> list = Font.getFontNames();
         fontSet.getItems().addAll(list);
-        fontSet.setValue(Preferences.preference.get("font"));
+        fontSet.setValue(fontValue);
         fontSet.getSelectionModel().selectedIndexProperty().addListener((observableValue, number, t1) -> enableApply());
 
         // Initialize image sizes
         imageSize.getItems().addAll("512", "1024", "None");
-        imageSize.setValue(Preferences.preference.getOrDefault("imageSize", "sNone").substring(1));
+        imageSize.setValue(imageSizeValue);
         imageSize.getSelectionModel().selectedIndexProperty().addListener((observableValue, number, t1) -> enableApply());
 
         // Initialize character set
         characterSet.getItems().addAll("Generic", "Block", "Kanji");
-        characterSet.setValue(Preferences.preference.get("charSet"));
+        characterSet.setValue(charSetValue);
         characterSet.getSelectionModel().selectedIndexProperty().addListener((observableValue, number, t1) -> enableApply());
     }
 
@@ -86,7 +91,7 @@ public class PreferencesController implements Initializable {
             Preferences.preference.put("charSet", characterSet.getValue());
             Preferences.preference.put("imageSize", "s" + imageSize.getValue());
             Preferences.preference.put("font", fontSet.getValue());
-            Preferences.preference.put("grayscale", grayscaleButton.pressedProperty().get() ? "true" : "false");
+            Preferences.preference.put("grayscale", grayscaleButton.isSelected() ? "true" : "false");
             Preferences.savePreferences();
         } catch (IOException e) {
             e.printStackTrace(System.out);

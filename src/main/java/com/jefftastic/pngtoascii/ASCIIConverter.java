@@ -2,6 +2,8 @@ package com.jefftastic.pngtoascii;
 
 import javafx.scene.image.Image;
 import javafx.scene.image.PixelReader;
+import javafx.scene.image.PixelWriter;
+import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
 
 /**
@@ -13,6 +15,13 @@ public class ASCIIConverter {
     private static String ascii = "$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvunxrjft/|()1{}[]?-_+~<>i!lI;:,^`'. ";
     private static int asciiLen = ascii.length() - 1;
 
+    /**
+     * Converts image pixel data into ASCII.
+     * @param image Image data
+     * @param radius Square radius of pixels to sample
+     * @param lineControl Lines to skip per successful line generation
+     * @return String of the generated ASCII art
+     */
     public static String toASCII(Image image, int radius, byte lineControl) {
         // Declare variables
         int width = (int) image.getWidth();
@@ -57,6 +66,16 @@ public class ASCIIConverter {
      * grayscale bytes.
      */
     static class RGBtoGS {
+        /**
+         * Determines the brightness average of a square radius of pixels in an image
+         * @param pr Pixel reader
+         * @param x Starting X coordinate on the image
+         * @param y Starting Y coordinate on the image
+         * @param width Width of the image
+         * @param height Height of the image
+         * @param radius Radius of pixels to scan
+         * @return The brightness average
+         */
         private static short getSample(PixelReader pr, int x, int y, int width, int height, int radius) {
             // Declare variables
             int realX = x * radius, realY = y * radius;
@@ -83,6 +102,27 @@ public class ASCIIConverter {
 
             // Return average
             return (short) (result / Math.max(count, 1));
+        }
+
+        /**
+         * Converts an image into grayscale.
+         * @param image Image data
+         * @return Grayscale converted image
+         */
+        public static Image imageToGrayscale(Image image) {
+            // Declare variables
+            WritableImage writableImage = new WritableImage(
+                    (int) image.getWidth(),
+                    (int) image.getHeight()
+            );
+            PixelReader pr = image.getPixelReader();
+            PixelWriter pw = writableImage.getPixelWriter();
+
+            // Iterate and convert pixels
+            for (int x = 0; x < writableImage.getWidth(); x++)
+                for (int y = 0; y < writableImage.getHeight(); y++)
+                    pw.setColor(x, y, pr.getColor(x, y).grayscale());
+            return writableImage;
         }
     }
 }

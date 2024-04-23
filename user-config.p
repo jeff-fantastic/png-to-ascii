@@ -1,6 +1,6 @@
 #User Preferences Data
-#Tue Apr 23 14:46:26 EDT 2024
-charSet=Block
-imageSize=s1024
+#Tue Apr 23 16:17:28 EDT 2024
+charSet=Generic
+imageSize=sNone
 font=Carlito
-grayscale=false
+grayscale=true

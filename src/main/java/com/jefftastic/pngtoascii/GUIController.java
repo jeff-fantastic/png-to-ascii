@@ -1,7 +1,5 @@
 package com.jefftastic.pngtoascii;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -77,36 +75,37 @@ public class GUIController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        // Connect listener to preferences map
-        Preferences.addListener(new PreferencesListener() {
-            @Override
-            public void preferencesChanged() {
-                updatePreferences();
-            }
-        });
+        // Connect listener to preferences
+        Preferences.addListener(this::updatePreferences);
 
         // Set up spinner
         lineSkip.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 8, 0));
-        lineSkip.valueProperty().addListener(new ChangeListener<Integer>() {
-            @Override
-            public void changed(ObservableValue<? extends Integer> observableValue, Integer oldVal, Integer newVal) {
-                lineControl = newVal.byteValue();
-                if (oldVal.byteValue() != newVal.byteValue() && userImage != null)
-                    asciiOutput.setText(ASCIIConverter.toASCII(userImage, conversionRadius, lineControl));
-            }
+        lineSkip.valueProperty().addListener((observableValue, oldVal, newVal) -> {
+            lineControl = newVal.byteValue();
+            if (oldVal.byteValue() != newVal.byteValue() && userImage != null)
+                asciiOutput.setText(ASCIIConverter.toASCII(userImage, conversionRadius, lineControl));
         });
 
         // Add slider listener
-        pixelRatioSlider.valueProperty().addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> observableValue, Number oldVal, Number newVal) {
-                byte value = newVal.byteValue();
-                pixelRatioLabel.setText("%d:1".formatted(value * value));
-                conversionRadius = value;
-                if (oldVal.intValue() != newVal.intValue() && userImage != null)
-                    asciiOutput.setText(ASCIIConverter.toASCII(userImage, conversionRadius, lineControl));
-            }
+        pixelRatioSlider.valueProperty().addListener((observableValue, oldVal, newVal) -> {
+            byte value = newVal.byteValue();
+            pixelRatioLabel.setText("%d:1".formatted(value * value));
+            conversionRadius = value;
+            if (oldVal.intValue() != newVal.intValue() && userImage != null)
+                asciiOutput.setText(ASCIIConverter.toASCII(userImage, conversionRadius, lineControl));
         });
+    }
+
+    /**
+     * Updates various elements of the program to reflect
+     * user preferences.
+     */
+    private void updatePreferences() {
+        if (
+            Preferences.preference.getOrDefault("grayscale", "true") == "true" &&
+            imageView.getImage() != null
+        )
+            imageView.setImage(ASCIIConverter.RGBtoGS.imageToGrayscale(imageView.getImage()));
     }
 
     /**
@@ -121,7 +120,7 @@ public class GUIController implements Initializable {
             stage.initOwner(Main.mainStage);
             stage.setTitle(title);
             stage.setScene(new Scene(root));
-            stage.showAndWait();
+            stage.show();
         } catch (IOException e) {
             Alert error = new Alert(
                     Alert.AlertType.ERROR,
@@ -207,19 +206,13 @@ public class GUIController implements Initializable {
      * Fired when preferences menu is requested
      */
     @FXML
-    protected void onPreferencePressed() {
-        // Create new window
-        createWindow("preferences.fxml", "Preferences");
-    }
+    protected void onPreferencePressed() { createWindow("preferences.fxml", "Preferences"); }
 
     /**
      * Fired when About dialog is requested
      */
     @FXML
-    protected void onAboutPressed() {
-        // Create new window
-        createWindow("about.fxml", "About this program");
-    }
+    protected void onAboutPressed() { createWindow("about.fxml", "About this program"); }
 
     @FXML
     protected void onLinesHelpPressed() {
