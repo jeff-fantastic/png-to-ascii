@@ -12,6 +12,7 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.*;
@@ -34,6 +35,10 @@ public class GUIController implements Initializable {
     @FXML
     private Slider pixelRatioSlider;
     @FXML
+    public Slider brightnessSlider;
+    @FXML
+    public Slider contrastSlider;
+    @FXML
     private TextArea asciiOutput;
     @FXML
     private ImageView imageView;
@@ -47,6 +52,7 @@ public class GUIController implements Initializable {
     private MenuItem aboutButton;
     @FXML
     private Spinner<Integer> lineSkip;
+
 
     /**
      * Image that was loaded by end user
@@ -71,6 +77,14 @@ public class GUIController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        // Connect listener to preferences map
+        Preferences.addListener(new PreferencesListener() {
+            @Override
+            public void preferencesChanged() {
+                updatePreferences();
+            }
+        });
+
         // Set up spinner
         lineSkip.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 8, 0));
         lineSkip.valueProperty().addListener(new ChangeListener<Integer>() {
@@ -93,6 +107,29 @@ public class GUIController implements Initializable {
                     asciiOutput.setText(ASCIIConverter.toASCII(userImage, conversionRadius, lineControl));
             }
         });
+    }
+
+    /**
+     * Creates a window.
+     */
+    private void createWindow(String fxml, String title) {
+        Parent root;
+        try {
+            root = FXMLLoader.load(Objects.requireNonNull(Main.class.getResource(fxml)));
+            Stage stage = new Stage();
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.initOwner(Main.mainStage);
+            stage.setTitle(title);
+            stage.setScene(new Scene(root));
+            stage.showAndWait();
+        } catch (IOException e) {
+            Alert error = new Alert(
+                    Alert.AlertType.ERROR,
+                    "Something has gone horribly wrong.\n\n" + e.getCause(),
+                    ButtonType.OK
+            );
+            error.showAndWait();
+        }
     }
 
     /**
@@ -167,26 +204,21 @@ public class GUIController implements Initializable {
     }
 
     /**
+     * Fired when preferences menu is requested
+     */
+    @FXML
+    protected void onPreferencePressed() {
+        // Create new window
+        createWindow("preferences.fxml", "Preferences");
+    }
+
+    /**
      * Fired when About dialog is requested
      */
     @FXML
     protected void onAboutPressed() {
         // Create new window
-        Parent root;
-        try {
-            root = FXMLLoader.load(Objects.requireNonNull(Main.class.getResource("about.fxml")));
-            Stage stage = new Stage();
-            stage.setTitle("About This Program");
-            stage.setScene(new Scene(root));
-            stage.show();
-        } catch (IOException e) {
-            Alert error = new Alert(
-                    Alert.AlertType.ERROR,
-                    "Something has gone horribly wrong.\n\n" + e.getMessage(),
-                    ButtonType.OK
-            );
-            error.showAndWait();
-        }
+        createWindow("about.fxml", "About this program");
     }
 
     @FXML
@@ -200,5 +232,13 @@ public class GUIController implements Initializable {
                 ButtonType.OK
         );
         help.showAndWait();
+    }
+
+    /**
+     * Called when invert color is requested
+     * @param actionEvent Event that determines color inversion
+     */
+    @FXML
+    protected void onInvertColorPressed(ActionEvent actionEvent) {
     }
 }

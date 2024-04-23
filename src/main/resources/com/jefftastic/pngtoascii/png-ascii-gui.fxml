@@ -27,8 +27,8 @@
                   <MenuItem fx:id="loadImageButton" mnemonicParsing="false" onAction="#onLoadImagePressed" text="Load Image" />
                   <MenuItem fx:id="saveASCIIButton" mnemonicParsing="false" onAction="#onSaveASCIIPressed" text="Save ASCII" />
                   <SeparatorMenuItem mnemonicParsing="false" />
-                  <MenuItem fx:id="preferencesButton" mnemonicParsing="false" onAction="#onPreferencePressed" text="Preferences" />
-                  <MenuItem fx:id="exitButton1" mnemonicParsing="false" onAction="#onExitPressed" text="Exit" />
+                  <MenuItem mnemonicParsing="false" onAction="#onPreferencePressed" text="Preferences" />
+                  <MenuItem mnemonicParsing="false" onAction="#onExitPressed" text="Exit" />
                </items>
           </Menu>
           <Menu mnemonicParsing="false" text="Help">

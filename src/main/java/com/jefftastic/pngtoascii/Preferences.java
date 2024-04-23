@@ -11,7 +11,7 @@ import java.util.*;
 
 public class Preferences {
     // Declare enums / finals
-    public enum PreferenceCharSet   { Generic, Block, Kanji }
+    public enum PreferenceCharSet    { Generic, Block, Kanji }
     public enum PreferenceImageLimit { s512, s1024, sNone }
     private static final String PROPERTIES_PATH = "." + File.separator + "user-config.p";
 
@@ -26,21 +26,27 @@ public class Preferences {
     public static Map<String, String> preference = new HashMap<>();
 
     /**
+     * Holds all PreferencesListeners in order to inform
+     * them of a preference update
+     */
+    public static List<PreferencesListener> listeners = new ArrayList<>();
+
+    /**
      * Initializes preference map
      */
-    public Preferences() {
+    public static void initialize() {
         try {
-            if (!loadPreferences())
+            if (!loadPreferences()) {
+                assignDefaults();
                 savePreferences();
+            }
         } catch (IOException e) {
             /*
              Since we check if the preference file exists,
              it can be assumed the error likely involves the
-             new default file not being saved properly. In the
-             case of this event, just load default values.
+             new default file not being saved properly.
              */
             e.printStackTrace(System.out);
-            assignDefaults();
         }
     }
 
@@ -71,9 +77,12 @@ public class Preferences {
         if (!path.exists())
             return false;
 
-        // Otherwise, lets load from file
-        preference.clear();
+        // Otherwise, lets load from file and check size
         prop.load(new FileReader(path.getAbsolutePath()));
+        if (prop.isEmpty())
+            return false;
+
+        // Iterate and put in map
         for (String property : prop.stringPropertyNames()) {
             /*
              * If the property doesn't already exist in
@@ -83,7 +92,19 @@ public class Preferences {
                 continue;
             preference.put(property, prop.getProperty(property));
         }
+
+        // Inform listeners
+        for (PreferencesListener listener : listeners)
+            listener.preferencesChanged();
         return true;
+    }
+
+    /**
+     * Adds a preference listener.
+     * @param pL The listener to add
+     */
+    public static void addListener(PreferencesListener pL) {
+        listeners.add(pL);
     }
 
     /**
