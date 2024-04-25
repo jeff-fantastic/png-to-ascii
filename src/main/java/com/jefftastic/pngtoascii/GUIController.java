@@ -1,14 +1,20 @@
 package com.jefftastic.pngtoascii;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.control.*;
+import javafx.scene.effect.ColorAdjust;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.image.WritableImage;
+import javafx.scene.paint.Material;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -33,9 +39,13 @@ public class GUIController implements Initializable {
     @FXML
     private Slider pixelRatioSlider;
     @FXML
-    public Slider brightnessSlider;
+    private Slider brightnessSlider;
     @FXML
-    public Slider contrastSlider;
+    private Label brightnessPercent;
+    @FXML
+    private Slider contrastSlider;
+    @FXML
+    private Label contrastPercent;
     @FXML
     private TextArea asciiOutput;
     @FXML
@@ -57,6 +67,14 @@ public class GUIController implements Initializable {
      */
     private Image userImage;
     /**
+     * Image with effects applied
+     */
+    private WritableImage effectedImage;
+    /**
+     * Color adjuster for image modification
+     */
+    private ColorAdjust colorAdjust = new ColorAdjust();
+    /**
      * Radius of pixels to use in the
      * conversion process
      */
@@ -75,10 +93,14 @@ public class GUIController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        // Connect listener to preferences
+        /*
+         * Preferences update listener
+         */
         Preferences.addListener(this::updatePreferences);
 
-        // Set up spinner
+        /*
+         * Line skip slider listener
+         */
         lineSkip.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 8, 0));
         lineSkip.valueProperty().addListener((observableValue, oldVal, newVal) -> {
             lineControl = newVal.byteValue();
@@ -86,13 +108,51 @@ public class GUIController implements Initializable {
                 asciiOutput.setText(ASCIIConverter.toASCII(userImage, conversionRadius, lineControl));
         });
 
-        // Add slider listener
+        /*
+         * Pixel ratio slider listener
+         */
         pixelRatioSlider.valueProperty().addListener((observableValue, oldVal, newVal) -> {
             byte value = newVal.byteValue();
             pixelRatioLabel.setText("%d:1".formatted(value * value));
             conversionRadius = value;
             if (oldVal.intValue() != newVal.intValue() && userImage != null)
                 asciiOutput.setText(ASCIIConverter.toASCII(userImage, conversionRadius, lineControl));
+        });
+
+        /*
+         * Brightness slider listener
+         */
+        brightnessSlider.valueProperty().addListener((observableValue, oldVal, newVal) -> {
+            // Get value and set percent
+            float value = newVal.floatValue();
+            brightnessPercent.setText("%.0f%%".formatted(value * 100));
+
+            // Abort if no image
+            if (imageView.getImage() == null)
+                return;
+
+            // Apply brightness mod
+            colorAdjust.setBrightness(value);
+            imageView.setEffect(colorAdjust);
+            imageView.snapshot(new SnapshotParameters(), effectedImage);
+        });
+
+        /*
+         * Contrast slider listener
+         */
+        contrastSlider.valueProperty().addListener((observableValue, oldVal, newVal) -> {
+            // Get value and set percent
+            float value = newVal.floatValue();
+            contrastPercent.setText("%.0f%%".formatted(value * 100));
+
+            // Abort if no image
+            if (imageView.getImage() == null)
+                return;
+
+            // Apply contrast mod
+            colorAdjust.setContrast(value);
+            imageView.setEffect(colorAdjust);
+            imageView.snapshot(new SnapshotParameters(), effectedImage);
         });
     }
 
@@ -163,7 +223,9 @@ public class GUIController implements Initializable {
         // Set image view
         imageView.setImage(userImage);
         setPreviewImageGrayscale();
-        asciiOutput.setText(ASCIIConverter.toASCII(userImage, conversionRadius, lineControl));
+        effectedImage = new WritableImage(userImage.getWidth(), userImage.getHeight());
+        imageView.snapshot(new SnapshotParameters(), effectedImage);
+        asciiOutput.setText(ASCIIConverter.toASCII(effectedImage, conversionRadius, lineControl));
     }
 
     /**

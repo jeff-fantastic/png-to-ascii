@@ -6,6 +6,9 @@ import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
 
+import java.awt.image.BufferedImage;
+import java.awt.image.RescaleOp;
+
 /**
  * Reads image data as pixels and compares
  * perceived grayscale brightness to a character map.
@@ -123,6 +126,32 @@ public class ASCIIConverter {
                 for (int y = 0; y < writableImage.getHeight(); y++)
                     pw.setColor(x, y, pr.getColor(x, y).grayscale());
             return writableImage;
+        }
+    }
+
+    /**
+     * Performs generic filter operations on
+     * image data, sorta similar to RGBtoGS.
+     * @see RGBtoGS
+     */
+    static class ImageOp {
+
+        /**
+         * Brightens an image based on the
+         * provided coefficient value
+         * @param image Input image
+         * @param coeff Brightness range from [-1.0 -> 1.0]
+         * @return Modified image
+         */
+        public static Image brightenImage(Image image, float coeff) {
+            // Declare variables
+            RescaleOp rescaleOp = new RescaleOp(coeff, 0, null);
+            WritableImage newImage = new WritableImage((int)image.getWidth(), (int)image.getHeight());
+            BufferedImage bufImage = Image;
+
+            rescaleOp.filter(image, newImage);
+
+            return newImage;
         }
     }
 }

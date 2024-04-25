@@ -58,8 +58,8 @@
                            <right>
                               <HBox alignment="CENTER_RIGHT" prefHeight="91.0" prefWidth="336.0" BorderPane.alignment="CENTER">
                                  <children>
-                                    <Slider fx:id="brightnessSlider" blockIncrement="0.05" majorTickUnit="0.05" max="1.0" minorTickCount="0" prefHeight="16.0" prefWidth="265.0" snapToTicks="true" value="0.5" />
-                                    <Label alignment="CENTER_RIGHT" minWidth="-Infinity" prefWidth="50.0" text="50%">
+                                    <Slider fx:id="brightnessSlider" blockIncrement="0.05" majorTickUnit="0.05" max="1.0" min="-1.0" minorTickCount="0" prefHeight="16.0" prefWidth="265.0" snapToTicks="true" />
+                                    <Label fx:id="brightnessPercent" alignment="CENTER_RIGHT" minWidth="-Infinity" prefWidth="50.0" text="50%">
                                        <padding>
                                           <Insets bottom="4.0" left="4.0" right="8.0" top="4.0" />
                                        </padding>
@@ -80,7 +80,7 @@
                               <HBox alignment="CENTER_RIGHT" prefHeight="91.0" prefWidth="336.0" BorderPane.alignment="CENTER">
                                  <children>
                                     <Slider fx:id="contrastSlider" blockIncrement="0.05" majorTickUnit="0.05" max="1.0" minorTickCount="0" prefHeight="16.0" prefWidth="265.0" snapToTicks="true" value="0.5" />
-                                    <Label alignment="CENTER_RIGHT" minWidth="-Infinity" prefWidth="50.0" text="50%">
+                                    <Label fx:id="contrastPercent" alignment="CENTER_RIGHT" minWidth="-Infinity" prefWidth="50.0" text="50%">
                                        <padding>
                                           <Insets bottom="4.0" left="4.0" right="8.0" top="4.0" />
                                        </padding>
