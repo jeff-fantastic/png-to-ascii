@@ -1,11 +1,13 @@
 package com.jefftastic.pngtoascii;
 
+import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
 import javafx.scene.image.PixelReader;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
 
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.RescaleOp;
 
@@ -137,21 +139,20 @@ public class ASCIIConverter {
     static class ImageOp {
 
         /**
-         * Brightens an image based on the
-         * provided coefficient value
+         * Modifies brightness and contrast values on
+         * an image based on provided values.
          * @param image Input image
-         * @param coeff Brightness range from [-1.0 -> 1.0]
+         * @param brightCoeff Brightness range from [-1.0 -> 1.0]
+         * @param contrastCoeff Contrast range from [0 -> 255]
          * @return Modified image
          */
-        public static Image brightenImage(Image image, float coeff) {
+        public static Image modifyImage(Image image, float brightCoeff, short contrastCoeff) {
             // Declare variables
-            RescaleOp rescaleOp = new RescaleOp(coeff, 0, null);
-            WritableImage newImage = new WritableImage((int)image.getWidth(), (int)image.getHeight());
-            BufferedImage bufImage = Image;
+            RescaleOp rescaleOp = new RescaleOp(brightCoeff, contrastCoeff, null);
 
-            rescaleOp.filter(image, newImage);
-
-            return newImage;
+            // Apply filter and return
+            BufferedImage bufImage = rescaleOp.filter(SwingFXUtils.fromFXImage(image, null), null);
+            return SwingFXUtils.toFXImage(bufImage, null);
         }
     }
 }

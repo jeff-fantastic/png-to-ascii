@@ -69,11 +69,7 @@ public class GUIController implements Initializable {
     /**
      * Image with effects applied
      */
-    private WritableImage effectedImage;
-    /**
-     * Color adjuster for image modification
-     */
-    private ColorAdjust colorAdjust = new ColorAdjust();
+    private Image effectedImage;
     /**
      * Radius of pixels to use in the
      * conversion process
@@ -105,7 +101,7 @@ public class GUIController implements Initializable {
         lineSkip.valueProperty().addListener((observableValue, oldVal, newVal) -> {
             lineControl = newVal.byteValue();
             if (oldVal.byteValue() != newVal.byteValue() && userImage != null)
-                asciiOutput.setText(ASCIIConverter.toASCII(userImage, conversionRadius, lineControl));
+                asciiOutput.setText(ASCIIConverter.toASCII(effectedImage, conversionRadius, lineControl));
         });
 
         /*
@@ -116,7 +112,7 @@ public class GUIController implements Initializable {
             pixelRatioLabel.setText("%d:1".formatted(value * value));
             conversionRadius = value;
             if (oldVal.intValue() != newVal.intValue() && userImage != null)
-                asciiOutput.setText(ASCIIConverter.toASCII(userImage, conversionRadius, lineControl));
+                asciiOutput.setText(ASCIIConverter.toASCII(effectedImage, conversionRadius, lineControl));
         });
 
         /*
@@ -132,9 +128,8 @@ public class GUIController implements Initializable {
                 return;
 
             // Apply brightness mod
-            colorAdjust.setBrightness(value);
-            imageView.setEffect(colorAdjust);
-            imageView.snapshot(new SnapshotParameters(), effectedImage);
+            effectedImage = ASCIIConverter.ImageOp.modifyImage(userImage, value, (short)(contrastSlider.getValue() * 255));
+            imageView.setImage(effectedImage);
         });
 
         /*
@@ -150,9 +145,8 @@ public class GUIController implements Initializable {
                 return;
 
             // Apply contrast mod
-            colorAdjust.setContrast(value);
-            imageView.setEffect(colorAdjust);
-            imageView.snapshot(new SnapshotParameters(), effectedImage);
+            effectedImage = ASCIIConverter.ImageOp.modifyImage(userImage, (float)brightnessSlider.getValue(), (short)(value * 255));
+            imageView.setImage(effectedImage);
         });
     }
 
@@ -175,7 +169,7 @@ public class GUIController implements Initializable {
         )
             imageView.setImage(ASCIIConverter.RGBtoGS.imageToGrayscale(imageView.getImage()));
         else
-            imageView.setImage(userImage);
+            imageView.setImage(effectedImage);
     }
 
     /**
@@ -221,10 +215,9 @@ public class GUIController implements Initializable {
         userImage = new Image(new FileInputStream(selectedImage.getAbsolutePath()));
 
         // Set image view
-        imageView.setImage(userImage);
         setPreviewImageGrayscale();
-        effectedImage = new WritableImage(userImage.getWidth(), userImage.getHeight());
-        imageView.snapshot(new SnapshotParameters(), effectedImage);
+        effectedImage = ASCIIConverter.ImageOp.modifyImage(userImage, (float)brightnessSlider.getValue(), (byte)(contrastSlider.getValue() * 255));
+        imageView.setImage(effectedImage);
         asciiOutput.setText(ASCIIConverter.toASCII(effectedImage, conversionRadius, lineControl));
     }
 
