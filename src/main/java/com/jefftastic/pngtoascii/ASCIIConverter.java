@@ -137,22 +137,37 @@ public class ASCIIConverter {
      * @see RGBtoGS
      */
     static class ImageOp {
+        // Declare variables
+        private static BufferedImage bI;
+        private static WritableImage wI;
 
         /**
          * Modifies brightness and contrast values on
-         * an image based on provided values.
-         * @param image Input image
+         * a preset Image based on provided values
          * @param brightCoeff Brightness range from [-1.0 -> 1.0]
          * @param contrastCoeff Contrast range from [0 -> 255]
          * @return Modified image
          */
-        public static Image modifyImage(Image image, float brightCoeff, short contrastCoeff) {
+        public static Image modifyImage(float brightCoeff, short contrastCoeff) {
             // Declare variables
-            RescaleOp rescaleOp = new RescaleOp(brightCoeff, contrastCoeff, null);
+            RescaleOp rescaleOp = new RescaleOp(brightCoeff, contrastCoeff, new RenderingHints(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED));
 
             // Apply filter and return
-            BufferedImage bufImage = rescaleOp.filter(SwingFXUtils.fromFXImage(image, null), null);
-            return SwingFXUtils.toFXImage(bufImage, null);
+            BufferedImage bufImage = rescaleOp.filter(bI, null);
+            return SwingFXUtils.toFXImage(bufImage, wI);
+        }
+
+        /**
+         * Creates new BufferedImage and WritableImage
+         * objects for use in image modification.
+         * @param image Image to create objects with
+         */
+        public static void setImages(Image image) {
+            // Get width and height and create buffered and writable images
+            int width = (int) image.getWidth(), height = (int) image.getHeight();
+
+            bI = SwingFXUtils.fromFXImage(image, null);
+            wI = new WritableImage(width, height);
         }
     }
 }

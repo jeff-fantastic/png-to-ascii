@@ -101,7 +101,7 @@ public class GUIController implements Initializable {
         lineSkip.valueProperty().addListener((observableValue, oldVal, newVal) -> {
             lineControl = newVal.byteValue();
             if (oldVal.byteValue() != newVal.byteValue() && userImage != null)
-                asciiOutput.setText(ASCIIConverter.toASCII(effectedImage, conversionRadius, lineControl));
+                updateASCII();
         });
 
         /*
@@ -112,7 +112,7 @@ public class GUIController implements Initializable {
             pixelRatioLabel.setText("%d:1".formatted(value * value));
             conversionRadius = value;
             if (oldVal.intValue() != newVal.intValue() && userImage != null)
-                asciiOutput.setText(ASCIIConverter.toASCII(effectedImage, conversionRadius, lineControl));
+                updateASCII();
         });
 
         /*
@@ -128,8 +128,7 @@ public class GUIController implements Initializable {
                 return;
 
             // Apply brightness mod
-            effectedImage = ASCIIConverter.ImageOp.modifyImage(userImage, value, (short)(contrastSlider.getValue() * 255));
-            imageView.setImage(effectedImage);
+            updateImage();
         });
 
         /*
@@ -145,8 +144,7 @@ public class GUIController implements Initializable {
                 return;
 
             // Apply contrast mod
-            effectedImage = ASCIIConverter.ImageOp.modifyImage(userImage, (float)brightnessSlider.getValue(), (short)(value * 255));
-            imageView.setImage(effectedImage);
+            updateImage();
         });
     }
 
@@ -167,7 +165,7 @@ public class GUIController implements Initializable {
             Objects.equals(Preferences.preference.getOrDefault("grayscale", "true"), "true") &&
             imageView.getImage() != null
         )
-            imageView.setImage(ASCIIConverter.RGBtoGS.imageToGrayscale(imageView.getImage()));
+            effectedImage = ASCIIConverter.RGBtoGS.imageToGrayscale(effectedImage);
         else
             imageView.setImage(effectedImage);
     }
@@ -196,6 +194,28 @@ public class GUIController implements Initializable {
     }
 
     /**
+     * Updates the image view and applies
+     * various defined user effects.
+     */
+    private void updateImage() {
+        // Run effect chain and set image
+        effectedImage = ASCIIConverter.ImageOp.modifyImage((float)brightnessSlider.getValue(), (short)(contrastSlider.getValue() * 255));
+        setPreviewImageGrayscale();
+        imageView.setImage(effectedImage);
+
+        // Reconvert to ASCII
+        updateASCII();
+    }
+
+    /**
+     * Updates the ASCII art based on the
+     * image provided by user.
+     */
+    private void updateASCII() {
+        asciiOutput.setText(ASCIIConverter.toASCII(effectedImage, conversionRadius, lineControl));
+    }
+
+    /**
      * Fired when user requests to load an image.
      */
     @FXML
@@ -214,11 +234,9 @@ public class GUIController implements Initializable {
             return;
         userImage = new Image(new FileInputStream(selectedImage.getAbsolutePath()));
 
-        // Set image view
-        setPreviewImageGrayscale();
-        effectedImage = ASCIIConverter.ImageOp.modifyImage(userImage, (float)brightnessSlider.getValue(), (byte)(contrastSlider.getValue() * 255));
-        imageView.setImage(effectedImage);
-        asciiOutput.setText(ASCIIConverter.toASCII(effectedImage, conversionRadius, lineControl));
+        // Send image to ImageOp, then update image
+        ASCIIConverter.ImageOp.setImages(userImage);
+        updateImage();
     }
 
     /**
